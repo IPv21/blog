@@ -15,7 +15,9 @@ app.use(cors());
 
 //routes
 const blogRoutes = require('./src/routes/blog.route')
+const commentRoutes = require('./src/routes/comment.route')
 app.use('/api/blogs', blogRoutes)
+app.use('./api/comments', commentRoutes)
 app.use(bodyParser.json());
 
 app.use('/blog', blogRoutes);
