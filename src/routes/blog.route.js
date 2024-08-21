@@ -105,5 +105,59 @@ router.patch('/update-post/:id', async (req, res) => {
     }
 });
 
+//delete post
+router.delete('/:id', async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const post = await Blog.findByIdAndDelete(postId);
+        if(!post) {
+            return res.status(404).send({ message: "Post not found" });
+        }
+        res.status(200).send({ message: "<<<>Post Deleted Successfully<>>>" });
+        console.log("<<<>DELETING POST WITH ID<>>>", postId);
+
+    } catch(error) {
+        console.error("<<<>ERROR Deleting Post<>>>", error);
+        res.status(500).send({ message: "<<<>ERROR Deleting Post<>>>" });
+
+    }
+});
+
+//related posts
+router.get('./related-posts/:id', async (req, res) => {
+    const {id} = req.params.id;
+    if(!id) {
+        return res.status(400).send({ message: "Post ID is required" });
+    } 
+    const blog = await Blog.findById(id);
+    if(!blog) {
+        return res.status(404).send({ message: "Post not found" });
+    }
+
+    const titleRegex = new RegExp(blog.title.split(' ').join('|'), 'i');
+    const relatedQuery = {
+        _id: {$ne: id},  //excludes the current blog by id
+        title: {$regex: titleRegex}
+    }
+
+    const relatedPost = await Blog.find(relatedQuery);
+    res.status(200).send({message: "<<<>RELATED POST FOUND!<>>>", post: relatedPost })
+
+
+    try {
+        const relatedPosts = await Blog.find({ category: post.category, _id: { $ne: postId } }).limit(3);
+        res.status(200).send({
+            message: "<<<>Related Posts Fetched Successfully<>>>",
+            posts: relatedPosts
+        });
+    } catch (error) {
+        console.error("<<<>ERROR Fetching Related Posts<>>>", error);
+        res.status(500).send({ message: "<<<>ERROR Fetching Related Posts<>>>" });
+    }
+}
+);
+
+
+
 
 module.exports = router;
