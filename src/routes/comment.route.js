@@ -16,4 +16,18 @@ router.post('/create-comment', async (req, res) => {
     }
 });
 
+//get all comments 
+router.get("/total-comments", async (req, res) => {
+    try {
+        const comments = await Comment.find();
+        res.status(200).send({
+            message: "Comments Fetched Successfully",
+            comments: comments
+        });
+    } catch (error) {
+        console.error("<<<>ERROR Fetching Comments<>>>", error);
+        res.status(500).send({ message: "Error Fetching Comments" });
+    }
+});
+
 module.exports = router;
