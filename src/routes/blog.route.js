@@ -73,13 +73,16 @@ router.get('/:id', async (req, res) => {
             return res.status(404).send({ message: "Post not found" });
         }
 
+        //fetch comment related to post
+        const comment = await Comment.find({postId: postId}).populate('user', 'username email');
+
         res.status(200).send({
             message: "<<<>Post Fetched Successfully<>>>",
             post: post
         });
     } catch (error) {
         console.error("<<<>ERROR Fetching Post<>>>", error);
-        res.status(500).send({ message: "Error Fetching Post" });
+        res.status(500).send({ message: "<<<>Error Fetching Post<>>>" });
     }
 });
 
@@ -113,6 +116,11 @@ router.delete('/:id', async (req, res) => {
         if(!post) {
             return res.status(404).send({ message: "Post not found" });
         }
+
+        //delete all comments related to post
+        await Comment.deleteMany({ postId
+        });
+
         res.status(200).send({ message: "<<<>Post Deleted Successfully<>>>" });
         console.log("<<<>DELETING POST WITH ID<>>>", postId);
 
