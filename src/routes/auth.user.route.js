@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../model/user.model');
 const bcrypt = require('bcryptjs');
+const generateToken = require('../middleware/generateToken');
 
 //register a new user
 router.post('/register', async(req, res) => {
@@ -36,20 +37,72 @@ router.post('/login', async(req, res) => {
         if (!isMatch) {
             return res.status(400).send({ message: "Invalid credentials" });
         }
+
+        //generate token
+        const token = await generateToken(user._id);
+        res.cookie("Token", token, { 
+        httpOnly: true, //enable this only when you havew https://
+        sameSite: true,
+        secure: true
+         });
+        console.log("Generated Token = " + token);
         res.status(200).send({
-            message: "Login Successful Welcome Back " + user.username + " " + user.email + " ROLE:::" + user.role
+            message: "Login Successful " + user.email + " ROLE--->" + user.role, token, user
         });
 
-        //todo generate token
+       
+
         
 
     } catch (error) {
         console.error("<<<>ERROR Logging In User<>>>", error);
         res.status(500).send({ message: "Login Failed. Please try again. You were so close!" });
-    }}
+    }});
 
-);
+    //logout a user
+    router.post('/logout', async (req, res) => {
+        try {
+            res.clearCookie('token'); // Make sure the cookie name matches what you set during login
+            res.status(200).send({ message: "Logout Successful" });
+        } catch (error) {
+            console.error("<<<>ERROR Logging Out User<>>>", error);
+            res.status(500).send({ message: "Logout Failed. Please try again. You were so close!" });
+        }
+    });
 
+    //get all users
+    router.get('/users', async (req, res) => {
+        try {
+            const users = await User.find({}, 'id email username role');
+            res.status(200).send({
+                message: "I gotchyer uuusers right here!",
+                users: users
+            });
+        } catch (error){
+            console.error("<<<>ERROR Fetching Users<>>>", error);
+            res.status(500).send({ message: "Error Fetching Users" });
+        } 
+    }
+    );
+
+    //delete user
+    router.delete('/:id', async (req, res) => {
+        try {
+            const userId = req.params.id;
+            const user = await User.findByIdAndDelete(userId);
+            if (!user) {
+                return res.status(404).send({ message: "User not found" });
+            }
+            res.status(200).send({
+                message: "User Deleted Successfully",
+                user: user
+            });
+        } catch (error) {
+            console.error("<<<>ERROR Deleting User<>>>", error);
+            res.status(500).send({ message: "Error Deleting User" });
+        }
+    }
+    );
 
 
 module.exports = router;
