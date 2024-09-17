@@ -8,7 +8,7 @@ router.use(bodyParser.json());
 
 router.post('/create-post', async (req, res) => {
     try {
-        const newPost = new Blog(req.body);
+        const newPost = new Blog({...req.body});
         await newPost.save();
         res.status(201).send({
             message: "Post Created Successfully",
@@ -51,7 +51,7 @@ router.get('/', async (req, res) => {
             };
         }
 
-        const posts = await Blog.find(query).sort({ createdAt: -1 });
+        const posts = await Blog.find(query).populate('author', 'email').sort({ createdAt: -1 });
         res.status(200).send({
             message: "Posts Fetched Successfully",
             posts: posts
