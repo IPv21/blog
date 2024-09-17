@@ -88,8 +88,8 @@ router.post('/login', async(req, res) => {
     //delete user
     router.delete('/:id', async (req, res) => {
         try {
-            const userId = req.params.id;
-            const user = await User.findByIdAndDelete(userId);
+            const {id} = req.params.id;
+            const user = await User.findByIdAndDelete(id);
             if (!user) {
                 return res.status(404).send({ message: "User not found" });
             }
@@ -101,8 +101,27 @@ router.post('/login', async(req, res) => {
             console.error("<<<>ERROR Deleting User<>>>", error);
             res.status(500).send({ message: "Error Deleting User" });
         }
-    }
-    );
+    });
+
+    //update a user role
+
+    router.put('/:id', async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { role } = req.body;
+            const user = await User.findByIdAndUpdate(id, { role }, { new: true });
+            if (!user) {
+                return res.status(404).send({ message: "User not found" });
+            }
+            res.status(200).send({
+                message: "User Updated Successfully",
+                user: user
+            });
+        } catch (error) {
+            console.error("<<<>ERROR Updating User<>>>", error);
+            res.status(500).send({ message: "Error Updating User" });
+        }
+    });
 
 
 module.exports = router;
