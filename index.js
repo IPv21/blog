@@ -15,7 +15,7 @@ const blogRoutes = require('./src/routes/blog.route');
 const commentRoutes = require('./src/routes/comment.route');
 const userRoutes = require('./src/routes/auth.user.route');
 
-//use routes  2.51.18 hash password
+//use routes 
 app.use('/api/users', userRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/comments', commentRoutes);
@@ -33,3 +33,5 @@ main().then(() => console.log("<<<MongoDB Connected Successfully>>>")).catch(err
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });
+
+// 3:56 token validation
