@@ -2,13 +2,16 @@ const express = require('express');
 const router = express.Router();
 const Blog = require('../model/blog.model');
 const bodyParser = require('body-parser');
+const verifyToken = require('../middleware/verifyToken');
+const Comment = require('../model/comments.model');
+
 
 // Use body-parser middleware
 router.use(bodyParser.json());
 
-router.post('/create-post', async (req, res) => {
+router.post('/create-post', verifyToken,  async (req, res) => {
     try {
-        const newPost = new Blog({...req.body});
+        const newPost = new Blog({...req.body, author: req.user._id});
         await newPost.save();
         res.status(201).send({
             message: "Post Created Successfully",
@@ -87,7 +90,7 @@ router.get('/:id', async (req, res) => {
 });
 
 //update post
-router.patch('/update-post/:id', async (req, res) => {
+router.patch('/update-post/:id', verifyToken, async (req, res) => {
     try {
         const postId = req.params.id;
         console.log("Updating post with ID:", postId);
@@ -109,7 +112,7 @@ router.patch('/update-post/:id', async (req, res) => {
 });
 
 //delete post
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
     try {
         const postId = req.params.id;
         const post = await Blog.findByIdAndDelete(postId);
@@ -132,7 +135,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 //related posts
-router.get('./related-posts/:id', async (req, res) => {
+router.get('./related-posts/:id', verifyToken, async (req, res) => {
     const {id} = req.params.id;
     if(!id) {
         return res.status(400).send({ message: "Post ID is required" });
