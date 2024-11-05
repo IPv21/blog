@@ -24,7 +24,7 @@ app.use('/api/comments', commentRoutes);
 async function main() {
     await mongoose.connect(process.env.MONGODB_URL);
     app.get('/', (req, res) => {
-        res.send('Server is runninggg!!!');
+        res.send('NOMAD is runninggg!!!');
     });
 }
 

@@ -10,6 +10,7 @@ const BlogSchema = new mongoose.Schema({
         type: Object,
         required: true
     },
+    coverImg: String,
     category: String,
     author: {
         type: mongoose.Schema.Types.ObjectId,

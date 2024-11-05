@@ -8,8 +8,8 @@ const Comment = require('../model/comments.model');
 
 // Use body-parser middleware
 router.use(bodyParser.json());
-
-router.post('/create-post', verifyToken,  async (req, res) => {
+// , verifyToken, middleware
+router.post('/create-post',  verifyToken, async (req, res) => {
     try {
         const newPost = new Blog({...req.body, author: req.user._id});
         await newPost.save();
@@ -22,6 +22,7 @@ router.post('/create-post', verifyToken,  async (req, res) => {
         res.status(500).send({ message: "Error Creating Post" });
     }
 });
+
 
 router.get('/', async (req, res) => {
     try {

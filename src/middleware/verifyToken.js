@@ -9,12 +9,14 @@ const verifyToken = async (req, res, next) => {
         next();
     } catch (error) {
         console.error("<<<>ERROR Verifying Token<>>>", error);
+        console.log("TOKEN DECODED: ", req.user);
         res.status(401).send({ message: "Unauthorized" });
     }
 
 }
- 
 
 
 module.exports = verifyToken;
+
+
 
