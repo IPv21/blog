@@ -1,18 +1,20 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/user.model');
+
 const JWT_SECRET = process.env.JWT_SECRET_KEY;
 
+// Example function to generate JWT token
 const generateToken = async (userId) => {
     try {
-        const user = await User.findById(userId); // Use User model here
+        const user = await User.findById(userId); // Fetch user details
         if (!user) {
-            throw new Error("User NOT Found!");
+            throw new Error('User not found');
         }
-        const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ userId: user._id, role: user.role  }, JWT_SECRET, { expiresIn: '1h' });
         return token;
     } catch (error) {
-        console.error("ERROR Generating Token", error);
-        throw error; // Rethrow the error to handle it elsewhere if needed
+        console.error('Error generating token:', error);
+        throw error;
     }
 };
 
