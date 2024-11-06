@@ -8,17 +8,48 @@ const Comment = require('../model/comments.model');
 
 // Use body-parser middleware
 router.use(bodyParser.json());
-// , verifyToken, middleware
-router.post('/create-post',  verifyToken, async (req, res) => {
+
+// router.post('/create-post', verifyToken,  async (req, res) => {
+//     try {
+//         const newPost = new Blog({...req.body, author: req.user._id});
+//         await newPost.save();
+//         res.status(201).send({
+//             message: "Post Created Successfully",
+//             post: newPost
+//         });
+//     } catch (error) {
+//         console.error("<<<>ERROR Creating Post<>>>", error);
+//         res.status(500).send({ message: "Error Creating Post" });
+//     }
+// });
+
+router.post('/create-post', verifyToken, async (req, res) => {
     try {
-        const newPost = new Blog({...req.body, author: req.user._id});
-        await newPost.save();
-        res.status(201).send({
-            message: "Post Created Successfully",
-            post: newPost
+        const { title, description, content, coverImg, category, rating } = req.body;
+
+        // Add logging to verify values
+        console.log("Title:", title);
+        console.log("Content:", content);
+        console.log("Author:", req.user.userId); // Accessing req.user.userId
+
+        if (!title || !content || !req.user.userId) {
+            throw new Error("Missing required fields");
+        }
+
+        const newPost = new Blog({
+            title,
+            description,
+            content,
+            coverImg,
+            category,
+            author: req.user.userId,  // Set the author as req.user.userId
+            rating
         });
+
+        await newPost.save();
+        res.status(201).send({ message: "Post Created Successfully", post: newPost });
     } catch (error) {
-        console.error("<<<>ERROR Creating Post<>>>", error);
+        console.error("<<<>ERROR Creating Post<>>>", error.message);
         res.status(500).send({ message: "Error Creating Post" });
     }
 });
